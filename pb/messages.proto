@@ -5,7 +5,7 @@ package quasar;
 message PullFiltersRequest {}
 
 message PullFiltersResponse {
-    bytes bloomFilter = 1;
+    bytes AttenuateBloomFilter = 1;
 }
 
 message Message {
