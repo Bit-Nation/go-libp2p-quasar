@@ -8,11 +8,19 @@ message PullFiltersResponse {
     bytes AttenuateBloomFilter = 1;
 }
 
+message PushFiltersRequest {
+    bytes AttenuateBloomFilter = 1;
+}
+
+message PushFiltersResponse {}
+
 message Message {
 
     enum MessageType {
         PULL_FILTER_REQUEST = 0;
         PULL_FILTER_RESPONSE = 1;
+        PUSH_FILTER_REQUEST = 2;
+        PUSH_FILTER_RESPONE = 3;
     }
 
     MessageType type = 1;
@@ -20,5 +28,8 @@ message Message {
 
     PullFiltersRequest pullFiltersRequest = 3;
     PullFiltersResponse pullFiltersResponse = 4;
+
+    PushFiltersRequest pushFilterRequest = 5;
+    PushFiltersResponse pushFilterResponse = 6;
 
 }
