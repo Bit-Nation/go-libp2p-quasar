@@ -1,13 +1,13 @@
 package atbf
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"sync"
-	"encoding/json"
-	
-	bloom "github.com/willf/bloom"
 	"sort"
+	"sync"
+
+	bloom "github.com/willf/bloom"
 )
 
 // Create new AttenuatedBloomFilter
@@ -75,21 +75,21 @@ func (b *AttenuatedBloomFilter) Merge(remoteFilter *AttenuatedBloomFilter) error
 
 	b.lock.Lock()
 	defer b.lock.Unlock()
-	
+
 	// To store the keys in slice in sorted order
 	var keys []int
 	for k := range b.filters {
 		keys = append(keys, int(k))
 	}
 	sort.Ints(keys)
-	
+
 	// To perform the opertion you want
 	for _, k := range keys {
 		remFilter, exist := remoteFilter.filters[uint(k)]
 		if !exist {
 			return errors.New("couldn't find filter tho it should exist")
 		}
-		
+
 		// 0th filter is always our own one so we don't want to merge them
 		// therefore we are shifting one to the right
 		// 0th of the remote filter is gonna be our 1th
@@ -98,9 +98,9 @@ func (b *AttenuatedBloomFilter) Merge(remoteFilter *AttenuatedBloomFilter) error
 			break
 		}
 		myFilter.Merge(remFilter)
-		
+
 	}
-	
+
 	return nil
 
 }
@@ -111,7 +111,7 @@ func (b *AttenuatedBloomFilter) Marshal() ([]byte, error) {
 	})
 }
 
-func (b *AttenuatedBloomFilter) Unmarshal(data []byte) error  {
+func (b *AttenuatedBloomFilter) Unmarshal(data []byte) error {
 	var f attenuatedBloomFilter
 	if err := json.Unmarshal(data, &f); err != nil {
 		return err

@@ -38,22 +38,28 @@ func TestAttenuatedBloomFilter_Merge(t *testing.T) {
 
 }
 
-func TestJsonMarshalAndUnmarshal(t *testing.T)  {
+func TestJsonMarshalAndUnmarshal(t *testing.T) {
 
-	f := New(4, 4, 4)
-	require.Nil(t, f.Add(3, []byte("hi")))
-	exist, err := f.Test(3, []byte("hi"))
+	// create filter
+	filter := New(4, 4, 4)
+
+	// add item to filter
+	require.Nil(t, filter.Add(3, []byte("hi")))
+	exist, err := filter.Test(3, []byte("hi"))
 	require.Nil(t, err)
 	require.True(t, exist)
-	
-	exported, err := f.Marshal()
+
+	// export the whole thing
+	exported, err := filter.Marshal()
 	require.Nil(t, err)
 
-	ff := AttenuatedBloomFilter{}
-	require.Nil(t, ff.Unmarshal(exported))
-	
-	exist, err = ff.Test(3, []byte("hi"))
+	// unmarshal filter
+	recoveredFilter := AttenuatedBloomFilter{}
+	require.Nil(t, recoveredFilter.Unmarshal(exported))
+
+	// test if filter exist
+	exist, err = recoveredFilter.Test(3, []byte("hi"))
 	require.Nil(t, err)
 	require.True(t, exist)
-	
+
 }
