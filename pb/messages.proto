@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package quasar;
+
+message PullFiltersRequest {}
+
+message PullFiltersResponse {
+    bytes bloomFilter = 1;
+}
+
+message Message {
+
+    enum MessageType {
+        PULL_FILTER_REQUEST = 0;
+        PULL_FILTER_RESPONSE = 1;
+    }
+
+    MessageType type = 1;
+    string requestID = 2;
+
+    PullFiltersRequest pullFiltersRequest = 3;
+    PullFiltersResponse pullFiltersResponse = 4;
+
+}
