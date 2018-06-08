@@ -4,8 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"sync"
-
+	"encoding/json"
+	
 	bloom "github.com/willf/bloom"
+	"sort"
 )
 
 // Create new AttenuatedBloomFilter
@@ -27,6 +29,10 @@ func New(depth, m, k uint) *AttenuatedBloomFilter {
 type AttenuatedBloomFilter struct {
 	lock    sync.Mutex
 	filters map[uint]*bloom.BloomFilter
+}
+
+type attenuatedBloomFilter struct {
+	Filters map[uint]*bloom.BloomFilter `json:"filters"`
 }
 
 // add to filter
@@ -65,20 +71,52 @@ func (b *AttenuatedBloomFilter) Get(depth uint) (*bloom.BloomFilter, error) {
 }
 
 // merge an remote attenuated bloom filter
-func (b *AttenuatedBloomFilter) Merge(remoteFilter *AttenuatedBloomFilter) {
+func (b *AttenuatedBloomFilter) Merge(remoteFilter *AttenuatedBloomFilter) error {
 
 	b.lock.Lock()
 	defer b.lock.Unlock()
-
-	for index, remFilter := range remoteFilter.filters {
+	
+	// To store the keys in slice in sorted order
+	var keys []int
+	for k := range b.filters {
+		keys = append(keys, int(k))
+	}
+	sort.Ints(keys)
+	
+	// To perform the opertion you want
+	for _, k := range keys {
+		remFilter, exist := remoteFilter.filters[uint(k)]
+		if !exist {
+			return errors.New("couldn't find filter tho it should exist")
+		}
+		
 		// 0th filter is always our own one so we don't want to merge them
 		// therefore we are shifting one to the right
 		// 0th of the remote filter is gonna be our 1th
-		myFilter, exist := b.filters[index+1]
+		myFilter, exist := b.filters[uint(k)+1]
 		if !exist {
 			break
 		}
 		myFilter.Merge(remFilter)
+		
 	}
+	
+	return nil
 
+}
+
+func (b *AttenuatedBloomFilter) Marshal() ([]byte, error) {
+	return json.Marshal(attenuatedBloomFilter{
+		Filters: b.filters,
+	})
+}
+
+func (b *AttenuatedBloomFilter) Unmarshal(data []byte) error  {
+	var f attenuatedBloomFilter
+	if err := json.Unmarshal(data, &f); err != nil {
+		return err
+	}
+	b.filters = f.Filters
+	b.lock = sync.Mutex{}
+	return nil
 }

@@ -37,3 +37,23 @@ func TestAttenuatedBloomFilter_Merge(t *testing.T) {
 	require.True(t, exist)
 
 }
+
+func TestJsonMarshalAndUnmarshal(t *testing.T)  {
+
+	f := New(4, 4, 4)
+	require.Nil(t, f.Add(3, []byte("hi")))
+	exist, err := f.Test(3, []byte("hi"))
+	require.Nil(t, err)
+	require.True(t, exist)
+	
+	exported, err := f.Marshal()
+	require.Nil(t, err)
+
+	ff := AttenuatedBloomFilter{}
+	require.Nil(t, ff.Unmarshal(exported))
+	
+	exist, err = ff.Test(3, []byte("hi"))
+	require.Nil(t, err)
+	require.True(t, exist)
+	
+}
