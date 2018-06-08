@@ -12,6 +12,7 @@ import (
 
 // Create new AttenuatedBloomFilter
 func New(depth, m, k uint) *AttenuatedBloomFilter {
+	depth--
 
 	f := &AttenuatedBloomFilter{
 		filters: map[uint]*bloom.BloomFilter{},
