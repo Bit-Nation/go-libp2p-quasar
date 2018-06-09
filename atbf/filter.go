@@ -106,6 +106,19 @@ func (b *AttenuatedBloomFilter) Merge(remoteFilter *AttenuatedBloomFilter) error
 
 }
 
+// clear my filter
+// needed when we update the network
+func (b *AttenuatedBloomFilter) ClearMyFilter() error {
+	b.lock.Lock()
+	defer b.lock.Unlock()
+	myFilter, exist := b.filters[0]
+	if !exist {
+		return errors.New("can't reset filter since it doesn't exist")
+	}
+	myFilter.ClearAll()
+	return nil
+}
+
 func (b *AttenuatedBloomFilter) Marshal() ([]byte, error) {
 	return json.Marshal(attenuatedBloomFilter{
 		Filters: b.filters,

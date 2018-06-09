@@ -63,3 +63,33 @@ func TestJsonMarshalAndUnmarshal(t *testing.T) {
 	require.True(t, exist)
 
 }
+
+func TestAttenuatedBloomFilter_ClearMyFilter(t *testing.T) {
+
+	// create filter
+	filter := New(4, 4, 4)
+
+	// add a to filter
+	require.Nil(t, filter.Add(0, []byte("a")))
+	exist, err := filter.Test(0, []byte("a"))
+	require.Nil(t, err)
+	require.True(t, exist)
+
+	// add b to filter
+	require.Nil(t, filter.Add(1, []byte("b")))
+	exist, err = filter.Test(1, []byte("b"))
+	require.Nil(t, err)
+	require.True(t, exist)
+
+	// clear only my filter and make sure elements are removed
+	filter.ClearMyFilter()
+	exist, err = filter.Test(0, []byte("a"))
+	require.Nil(t, err)
+	require.False(t, exist)
+
+	// check if elements in other filters are still there
+	exist, err = filter.Test(1, []byte("b"))
+	require.Nil(t, err)
+	require.True(t, exist)
+
+}
