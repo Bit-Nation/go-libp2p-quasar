@@ -1,0 +1,22 @@
+{
+  "author": "florian",
+  "bugs": {},
+  "gx": {
+    "dvcsimport": "github.com/Bit-Nation/go-libp2p-quasar"
+  },
+  "gxDependencies": [
+    {
+      "author": "whyrusleeping",
+      "hash": "QmRvoAami8AAf5Yy6jcPq5KqQT1ZCaoi9dF1vdKAghmq9X",
+      "name": "go-libp2p",
+      "version": "6.0.0"
+    }
+  ],
+  "gxVersion": "0.12.1",
+  "language": "go",
+  "license": "",
+  "name": "go-libp2p-quasar",
+  "releaseCmd": "git commit -a -m \"gx publish $VERSION\"",
+  "version": "0.0.0"
+}
+
